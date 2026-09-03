@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en-NG">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <title>MacBite — Real food. Ready when you are.</title>
+    <meta name="description" content="Ibadan's everyday fast food kitchen. Rice, swallow, proteins and sides cooked through the day — delivered across Ibadan or packed and waiting at Cele bus stop, Old Ife Road." />
+    <link rel="canonical" href="https://macbite.ng/" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+
+    <meta name="theme-color" content="#7E1113" />
+    <meta name="apple-mobile-web-app-title" content="MacBite" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Local intent signals. Ibadan is the whole market; say so in the head. -->
+    <meta name="geo.region" content="NG-OY" />
+    <meta name="geo.placename" content="Ibadan" />
+    <meta name="geo.position" content="7.3775;4.0078" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MacBite" />
+    <meta property="og:locale" content="en_NG" />
+    <meta property="og:title" content="MacBite — Real food. Ready when you are." />
+    <meta property="og:description" content="Ibadan's everyday fast food kitchen. Delivered across Ibadan, or packed and waiting at Cele bus stop." />
+    <meta property="og:url" content="https://macbite.ng/" />
+    <meta property="og:image" content="https://macbite.ng/images/og-cover.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..900,0..100,0..1&family=Plus+Jakarta+Sans:wght@400..800&family=Space+Mono:wght@400;700&display=swap"
+    />
+
+    <!-- The hero photograph is the LCP element on every first visit. -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      fetchpriority="high"
+      imagesrcset="/images/hero-640.avif 640w, /images/hero-960.avif 960w, /images/hero-1280.avif 1280w, /images/hero-1920.avif 1920w, /images/hero-2560.avif 2560w"
+      imagesizes="100vw"
+    />
+
+    <!--
+      Defence in depth. The app never injects HTML and has no third-party
+      scripts, so 'self' is enough for script-src. Styles need 'unsafe-inline'
+      because the animation layer writes inline style attributes.
+      frame-ancestors is deliberately absent here — browsers ignore it in a
+      meta CSP. It is set for real in public/_headers and vercel.json.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self'; connect-src 'self'; frame-src https://www.google.com; upgrade-insecure-requests"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+  </head>
+  <body>
+    <!-- Scroll-reveal sections carry the animation library's initial styles in
+         the prerendered HTML. With scripts off they would never be revealed. -->
+    <noscript>
+      <style>[data-reveal]{opacity:1!important;transform:none!important}</style>
+    </noscript>
+    <div id="root"><!--app-html--></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

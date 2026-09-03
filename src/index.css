@@ -1,0 +1,188 @@
+@import 'tailwindcss';
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MacBite design tokens. Palette is taken from the official logo kit:
+   Brand Red #E32119 · Brand Gold #F7A81B · Deep Red #7E1113 · Field Red #9E1B1B
+   ───────────────────────────────────────────────────────────────────────────── */
+@theme {
+  --color-cream: #fff7ec;
+  --color-cream-2: #fbecd9;
+  --color-ink: #17100f;
+  --color-ink-2: #3d2d2a;
+  --color-ink-3: #6b5751;
+
+  --color-brand: #e32119;
+  --color-brand-600: #c8180f;
+  --color-brand-700: #a11510;
+  --color-deep: #7e1113;
+  --color-field: #9e1b1b;
+  --color-gold: #f7a81b;
+  --color-gold-600: #dd9110;
+  --color-leaf: #2f7a4f;
+
+  --font-display: 'Fraunces', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius-xl2: 1.25rem;
+
+  --shadow-lift: 0 1px 2px rgb(23 16 15 / 0.06), 0 8px 24px -8px rgb(23 16 15 / 0.14);
+  --shadow-lift-lg: 0 2px 4px rgb(23 16 15 / 0.06), 0 24px 56px -16px rgb(23 16 15 / 0.24);
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-rise: rise 0.7s var(--ease-out-soft) both;
+}
+
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes riseline {
+  from { transform: translate3d(0, 110%, 0); }
+  to { transform: none; }
+}
+@keyframes slow-zoom {
+  from { transform: scale(1.08); }
+  to { transform: none; }
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    color-scheme: light;
+    --header-h: 4.5rem;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--header-h) + 1rem);
+  }
+
+  body {
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-variation-settings: 'SOFT' 40, 'WONK' 1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p { text-wrap: pretty; }
+
+  /* One visible, consistent focus ring everywhere. Keyboard users get a real
+     affordance; mouse users never see it. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  [data-on-dark] :focus-visible { outline-color: var(--color-gold); }
+
+  ::selection { background: var(--color-gold); color: var(--color-ink); }
+
+  img { max-width: 100%; height: auto; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ── Utilities ─────────────────────────────────────────────────────────────── */
+
+/* Page gutter used by every section, so the whole site shares one measure. */
+@utility shell {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 82rem;
+  padding-inline: 1.25rem;
+  @media (width >= 48rem) { padding-inline: 2rem; }
+  @media (width >= 80rem) { padding-inline: 2.5rem; }
+}
+
+/* Small monospace label — the "receipt" voice used for eyebrows and meta. */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Fluid display sizes. Clamped so the hero never overflows a 320px phone. */
+@utility display-xl { font-size: clamp(2.6rem, 8.4vw, 7.25rem); line-height: 0.88; font-weight: 900; }
+@utility display-lg { font-size: clamp(2.25rem, 6vw, 4.5rem);  line-height: 0.94; font-weight: 800; }
+@utility display-md { font-size: clamp(1.75rem, 3.6vw, 2.75rem); line-height: 1.02; font-weight: 800; }
+
+/* Hides content visually but keeps it for screen readers. */
+@utility sr-only-focusable {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  &:focus {
+    position: fixed; top: 1rem; left: 1rem;
+    width: auto; height: auto; margin: 0;
+    padding: 0.75rem 1.25rem; clip-path: none;
+    background: var(--color-ink); color: white; border-radius: 0.75rem; z-index: 100;
+  }
+}
+
+/* Warm paper grain. Pure CSS, no image request. */
+@utility grain {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute; inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+  }
+}
+
+/* Scrollable rows that shouldn't show a bar. */
+@utility no-bar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Hero entrance.
+
+   These are CSS, not JavaScript, on purpose. The hero is the LCP element and
+   is prerendered: driving it from the animation library would bake
+   `opacity: 0` inline styles into the shipped HTML, so the headline could not
+   paint until ~400KB of JavaScript had downloaded and hydrated — and would
+   never paint at all if that failed. As CSS it paints as soon as the
+   stylesheet does. The reduced-motion rule above collapses all of it.
+   ───────────────────────────────────────────────────────────────────────────── */
+@utility hero-line {
+  animation: riseline 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@utility hero-fade {
+  animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@utility hero-zoom {
+  animation: slow-zoom 2.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}

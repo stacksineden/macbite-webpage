@@ -1,0 +1,37 @@
+{
+  "name": "macbite",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MacBite — Ibadan's everyday fast food kitchen. Ordering site.",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run build:client && npm run build:server && npm run sitemap && npm run prerender",
+    "build:client": "vite build --outDir dist/client",
+    "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
+    "prerender": "node scripts/prerender.mjs",
+    "sitemap": "node scripts/sitemap.mjs",
+    "images": "node scripts/optimize-images.mjs",
+    "preview": "vite preview --outDir dist/client",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "framer-motion": "^11.15.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.18.3",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^6.1.1",
+    "puppeteer-core": "^25.9.0",
+    "sharp": "^0.35.4",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.7.2",
+    "vite": "^8.2.2"
+  }
+}
