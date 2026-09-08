@@ -18,10 +18,10 @@ Everything below is a real blocker. Each one is a single edit in a single file.
 
 | # | What's needed | Where |
 |---|---|---|
-| 1 | **MacBite's WhatsApp number** — the entire checkout posts here | `src/config/site.ts` → `WHATSAPP_NUMBER` |
-| 2 | **Phone number** for the call-to-order links | `src/config/site.ts` → `PHONE_DISPLAY`, `PHONE_TEL` |
-| 3 | **The live domain** — canonicals, OG tags and sitemap all read it | `src/config/site.ts` → `SITE.url`, plus `public/robots.txt` |
-| 4 | **Real prices for all 39 products** | `src/data/menu.ts`, then set `PRICING_STATUS = 'confirmed'` |
+| ~~1~~ | ~~MacBite's WhatsApp number~~ — **done**: `+234 816 527 1392` | `src/config/site.ts` → `WHATSAPP_NUMBER` |
+| ~~2~~ | ~~Phone number for the call links~~ — **done**: same line as WhatsApp | `src/config/site.ts` → `PHONE_DISPLAY`, `PHONE_TEL` |
+| 1 | **The live domain** — canonicals, OG tags and sitemap all read it | `src/config/site.ts` → `SITE.url`, plus `public/robots.txt` |
+| ~~4~~ | ~~Real prices~~ — **done** for 37 of 39. The two **Pastries** lines are still unpriced and show "Price on request" | `src/data/menu.ts` → `macbite-bread`, `doughnuts` |
 | 5 | **Delivery zones and fees** | `src/data/zones.ts` |
 | 6 | **Minimum order value** | `src/config/site.ts` → `DEFAULT_MINIMUM_ORDER` (or per-zone `minimum`) |
 | 7 | **The soup list** — swallow can't be sold without it | `src/config/site.ts` → `SOUPS` |
@@ -39,11 +39,24 @@ Every one of these is marked `TODO(MacBite)` in the source, so
 
 ### Prices
 
-Prices in `src/data/menu.ts` are **indicative placeholders** — only Chicken
-(Large ₦3,500 / Small ₦2,000) came off MacBite's real stock sheet. While
-`PRICING_STATUS` is `'draft'` the site shows a standing "prices confirmed on
-WhatsApp" note and the order message asks the kitchen to confirm the total.
-Flip it to `'confirmed'` and that note disappears everywhere.
+Prices are MacBite's own and `PRICING_STATUS` is `'confirmed'`, so the standing
+"prices are indicative" note is off site-wide.
+
+**MacBite Bread and Doughnuts are the exception** — they were never priced, so
+they carry `price: null`, read *"Price on request"*, and the WhatsApp message
+asks the kitchen to confirm the total whenever one is in the basket. Give them
+a number in `src/data/menu.ts` and they behave like everything else.
+
+**Items on MacBite's price list that are NOT on the site.** These were left out
+deliberately — the brief was to correct existing items, not add new ones:
+
+| Item | Price given |
+|---|---|
+| Pounded yam (per wrap) | ₦700 |
+| Can dudu mixed fruit | ₦1,000 |
+| Viju chocolate | ₦1,500 — *photography for this is already in `_alternates/`* |
+| Nutri choco | ₦1,200 |
+| Ice tea 1L | ₦2,000 — **conflict**: previously asked to remove Ice Tea from the menu |
 
 A price may also be `null`. The item then reads *"Price on request"*, the cart
 total becomes *"On WhatsApp"*, and checkout still works — an unpriced item

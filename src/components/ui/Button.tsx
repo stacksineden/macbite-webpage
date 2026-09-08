@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 import { cx } from '@/lib/format';
 
@@ -60,26 +61,36 @@ export function Button({
   );
 }
 
-export function ButtonLink({
-  to, variant = 'primary', size = 'md', className, children, arrow, ...rest
-}: Common & { to: string } & Omit<React.ComponentProps<typeof Link>, 'to' | 'className' | 'children'>) {
+export const ButtonLink = forwardRef<
+  HTMLAnchorElement,
+  Common & { to: string } & Omit<React.ComponentProps<typeof Link>, 'to' | 'className' | 'children'>
+>(function ButtonLink({ to, variant = 'primary', size = 'md', className, children, arrow, ...rest }, ref) {
   const cls = cx(BASE, VARIANTS[variant], SIZES[size], className);
   const external = /^https?:|^tel:|^mailto:/.test(to);
 
   if (external) {
+    // `rest` is forwarded here too — it used to be dropped, which silently
+    // swallowed any onClick handler passed to an external link.
     return (
-      <a href={to} className={cls} rel="noopener noreferrer" target={to.startsWith('http') ? '_blank' : undefined}>
+      <a
+        ref={ref}
+        href={to}
+        className={cls}
+        rel="noopener noreferrer"
+        target={to.startsWith('http') ? '_blank' : undefined}
+        {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+      >
         {children}
         {arrow && <Arrow />}
       </a>
     );
   }
   return (
-    <Link to={to} className={cls} {...rest}>
+    <Link ref={ref} to={to} className={cls} {...rest}>
       {children}
       {arrow && <Arrow />}
     </Link>
   );
-}
+});
 
 export { Arrow };

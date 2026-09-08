@@ -85,6 +85,25 @@
 
   p { text-wrap: pretty; }
 
+  /*
+   * Tailwind v4's Preflight dropped the `cursor: pointer` that v3 put on
+   * buttons, deferring to the native default of `cursor: default`. The result
+   * is that every button on the site gives no pointer affordance on hover and
+   * reads as dead, even though it takes clicks perfectly well. Put it back.
+   */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  [role='radio'],
+  [role='switch'],
+  summary {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+
   /* One visible, consistent focus ring everywhere. Keyboard users get a real
      affordance; mouse users never see it. */
   :focus-visible {

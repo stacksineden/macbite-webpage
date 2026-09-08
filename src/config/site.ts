@@ -6,12 +6,23 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-/** TODO(MacBite): replace with the real WhatsApp business line, digits only, country code first, no `+`. */
-export const WHATSAPP_NUMBER = '2348000000000';
+/**
+ * MacBite's WhatsApp business line. Digits only, country code first, no `+`
+ * — wa.me rejects anything else. This one constant drives checkout, the
+ * footer's order button, the Contact page and the catering enquiry.
+ */
+export const WHATSAPP_NUMBER: string = '2348165271392';
 
-/** TODO(MacBite): the number customers should tap to call. Display form. */
-export const PHONE_DISPLAY = '+234 800 000 0000';
-export const PHONE_TEL = '+2348000000000';
+/** Ships with the repo so the checkout can warn if the real line was never set. */
+export const PLACEHOLDER_WHATSAPP = '2348000000000';
+
+/**
+ * The number customers tap to call — the same line as WhatsApp above.
+ * `PHONE_TEL` is what goes in `tel:` links and schema.org, so it stays in
+ * strict E.164; `PHONE_DISPLAY` is the human-readable form shown on the page.
+ */
+export const PHONE_DISPLAY = '+234 816 527 1392';
+export const PHONE_TEL = '+2348165271392';
 
 export const SITE = {
   name: 'MacBite',
@@ -69,13 +80,12 @@ export const SOUPS: { id: string; name: string; price: number | null }[] = [
 ];
 
 /**
- * Pricing status. Prices in `src/data/menu.ts` are INDICATIVE placeholders —
- * only the two chicken prices came off the real stock sheet. While this is
- * 'draft' the site shows a standing "prices confirmed on WhatsApp" note and the
- * WhatsApp order message asks MacBite to confirm the total.
- * Set to 'confirmed' once real prices are in and the note disappears everywhere.
+ * Pricing status. MacBite has now supplied real prices for every item except
+ * the two Pastries lines, which carry `price: null` and are quoted on WhatsApp.
+ * 'confirmed' removes the standing "prices are indicative" note site-wide.
+ * Set back to 'draft' if prices ever go stale again.
  */
-export const PRICING_STATUS: 'draft' | 'confirmed' = 'draft';
+export const PRICING_STATUS: 'draft' | 'confirmed' = 'confirmed';
 
 /** TODO(MacBite): minimum order value, and whether it varies by zone (see data/zones.ts). */
 export const DEFAULT_MINIMUM_ORDER = 2000;
