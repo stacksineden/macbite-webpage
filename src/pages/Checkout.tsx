@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { m } from 'framer-motion';
 import { Seo } from '@/lib/seo';
@@ -7,8 +7,7 @@ import { useHydrated } from '@/lib/useHydrated';
 import { zoneById } from '@/data/zones';
 import { buildOrderMessage, whatsappUrl, isValidNgPhone, orderRef, type CustomerDetails } from '@/lib/whatsapp';
 import { money, cx } from '@/lib/format';
-import { WHATSAPP_NUMBER, ADDRESS } from '@/config/site';
-import { Button } from '@/components/ui/Button';
+import { WHATSAPP_NUMBER, PLACEHOLDER_WHATSAPP, ADDRESS } from '@/config/site';
 import { ButtonLink } from '@/components/ui/Button';
 import { PricingNote } from '@/components/ui/PricingNote';
 
@@ -25,36 +24,86 @@ export default function Checkout() {
   const [sent, setSent] = useState<string | null>(null);
 
   const ref = useMemo(() => orderRef(), []);
+  const sendRef = useRef<HTMLAnchorElement>(null);
+
+  /**
+   * The order link is built from current state on every render, so the anchor
+   * always carries a real href. That is the whole point: a link the customer
+   * physically clicks is a user navigation, which no popup blocker touches.
+   * Scripted window.open() is what kept failing here.
+   */
+  const waUrl = useMemo(
+    () => whatsappUrl(buildOrderMessage({ lines, totals, mode, zoneId, customer: form, ref })),
+    [lines, totals, mode, zoneId, form, ref],
+  );
   const set = (k: keyof CustomerDetails) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((f) => ({ ...f, [k]: e.target.value }));
     setErrors((x) => ({ ...x, [k]: undefined }));
   };
 
+  /*
+   * The cart is emptied only after the confirmation has rendered. Doing both in
+   * one handler raced: `clear()` is a store update that flushes on its own, so
+   * React re-rendered with an empty cart while `sent` was still null and the
+   * guard below bounced the customer to /cart instead of the confirmation.
+   */
+  useEffect(() => {
+    if (sent) clear();
+  }, [sent, clear]);
+
   if (hydrated && lines.length === 0 && !sent) return <Navigate to="/cart" replace />;
 
-  function validate(): boolean {
+  /** Field order matters: it decides which error we send the customer to. */
+  const FIELD_ORDER: (keyof Errors)[] = ['name', 'phone', 'address'];
+
+  function validate(): Errors {
     const next: Errors = {};
     if (form.name.trim().length < 2) next.name = 'We need a name for the order.';
     if (!isValidNgPhone(form.phone)) next.phone = 'Enter a Nigerian mobile number, e.g. 0803 123 4567.';
     if (mode === 'delivery' && (form.address ?? '').trim().length < 8) next.address = 'Give the rider a street and house number.';
     setErrors(next);
-    return Object.keys(next).length === 0;
+    return next;
   }
 
+  /** Returns true when the order is good to send. Focuses the problem if not. */
+  function blockIfInvalid(e: { preventDefault: () => void }): boolean {
+    // Honeypot: a bot fills every field it finds, a person never sees this one.
+    if (form.company) {
+      e.preventDefault();
+      return true;
+    }
+
+    const problems = validate();
+    const firstInvalid = FIELD_ORDER.find((k) => problems[k]);
+    if (!firstInvalid) return false;
+
+    e.preventDefault();
+    // The send control sits below a tall form, so on a phone — and on a
+    // scrolled desktop window — the field that failed is usually off-screen.
+    // Without this it looks broken: it validates, marks a field the customer
+    // cannot see, and appears to do nothing.
+    const el = document.getElementById(firstInvalid);
+    el?.focus({ preventScroll: true });
+    el?.scrollIntoView({
+      block: 'center',
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    });
+    return true;
+  }
+
+  /** The anchor navigates on its own; this only vetoes it or records success. */
+  function handleSend(e: React.MouseEvent<HTMLAnchorElement>) {
+    if (blockIfInvalid(e)) return;
+    // Deferred so the browser has already begun opening the tab before React
+    // swaps this anchor out for the confirmation screen.
+    window.setTimeout(() => setSent(waUrl), 0);
+  }
+
+  /** Enter inside a field should still send, so hand the click to the anchor. */
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    // Honeypot: a bot fills every field it finds, a person never sees this one.
-    if (form.company) return;
-    if (!validate()) return;
-
-    const message = buildOrderMessage({ lines, totals, mode, zoneId, customer: form, ref });
-    const url = whatsappUrl(message);
-
-    // Opened before clearing, so a blocked popup never loses the order.
-    const win = window.open(url, '_blank', 'noopener,noreferrer');
-    if (!win) { window.location.href = url; return; }
-    setSent(url);
-    clear();
+    if (blockIfInvalid(e)) return;
+    sendRef.current?.click();
   }
 
   if (sent) {
@@ -137,10 +186,17 @@ export default function Checkout() {
             </div>
 
             <div className="pt-2">
-              <Button type="submit" size="lg" className="w-full shadow-lift-lg" arrow>
+              <ButtonLink
+                ref={sendRef}
+                to={waUrl}
+                size="lg"
+                className="w-full shadow-lift-lg"
+                onClick={handleSend}
+                arrow
+              >
                 Send order on WhatsApp
-              </Button>
-              {WHATSAPP_NUMBER === '2348000000000' && (
+              </ButtonLink>
+              {WHATSAPP_NUMBER === PLACEHOLDER_WHATSAPP && (
                 <p className="mt-3 rounded-2xl bg-brand/10 px-4 py-3 text-sm text-brand-700">
                   Setup: add MacBite's real WhatsApp number in <code className="font-mono">src/config/site.ts</code> before launch.
                 </p>
